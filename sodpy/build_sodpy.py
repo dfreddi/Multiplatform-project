@@ -25,6 +25,7 @@ ffibuilder.cdef("""
     int sod_img_save_as_png(sod_img input, const char *zPath);
 
     // Image processing.
+    void sod_img_set_pixel(sod_img m, int x, int y, int c, float val);
     sod_img sod_crop_image(sod_img im, int dx, int dy, int w, int h);
     void sod_img_rgb_to_hsv(sod_img im);
     void sod_img_hsv_to_rgb(sod_img im);

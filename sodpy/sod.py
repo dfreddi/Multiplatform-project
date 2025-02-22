@@ -1,8 +1,19 @@
 from sodcffi import lib, ffi
+from itertools import product
 
 class SodImage:
     def __init__(self, cimg):
         self.cimg = cimg
+
+    @classmethod
+    def constant_image(cls, w: int, h: int, c: int, value: tuple):
+        if len(value) != c:
+            raise ValueError("Value must have the same number of channels as the image")
+        cimg = lib.sod_make_image(w, h, c)
+        for x, y in product(range(w), range(h)):
+            for ch in range(c):
+                lib.sod_img_set_pixel(cimg, x, y, ch, value[ch])
+        return cls(cimg)
 
     @classmethod
     def load(cls, path, channels=0):
