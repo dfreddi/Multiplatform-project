@@ -3,7 +3,6 @@ from cffi import FFI
 
 ffibuilder = FFI()
 
-# Only expose the subset of sod.h functions used for the image processing API:
 ffibuilder.cdef("""
     typedef struct sod_img {
         int h;
@@ -26,11 +25,13 @@ ffibuilder.cdef("""
 
     // Image processing.
     void sod_img_set_pixel(sod_img m, int x, int y, int c, float val);
+    float sod_img_get_pixel(sod_img m, int x, int y, int c);
     sod_img sod_crop_image(sod_img im, int dx, int dy, int w, int h);
     void sod_img_rgb_to_hsv(sod_img im);
     void sod_img_hsv_to_rgb(sod_img im);
     sod_img sod_grayscale_image(sod_img im);
     sod_img sod_gaussian_blur_image(sod_img im, int radius, double sigma);
+    sod_img sod_threshold_image(sod_img input, float thresh);
 """)
 
 # Compute the absolute path to the folder containing sod_c headers and C sources.
@@ -45,7 +46,7 @@ ffibuilder.set_source(
     #include "sod_img_writer.h"
     #include "sod.c"
     ''',
-    libraries=[],  # add any needed libraries if required by your build
+    libraries=[],  # Add any libraries if needed
     include_dirs=[sod_c_dir]
 )
 
