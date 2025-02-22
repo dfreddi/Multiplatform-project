@@ -1,1 +1,4 @@
 penv
+*.png
+sodcffi.*
+__pycache__
