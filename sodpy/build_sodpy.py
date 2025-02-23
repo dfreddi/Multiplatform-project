@@ -26,12 +26,14 @@ ffibuilder.cdef("""
     // Image processing.
     void sod_img_set_pixel(sod_img m, int x, int y, int c, float val);
     float sod_img_get_pixel(sod_img m, int x, int y, int c);
+    sod_img sod_img_get_layer(sod_img input, int layer);
     sod_img sod_crop_image(sod_img im, int dx, int dy, int w, int h);
     void sod_img_rgb_to_hsv(sod_img im);
     void sod_img_hsv_to_rgb(sod_img im);
     sod_img sod_grayscale_image(sod_img im);
     sod_img sod_gaussian_blur_image(sod_img im, int radius, double sigma);
-    sod_img sod_threshold_image(sod_img input, float thresh);
+    sod_img sod_threshold_image(sod_img im, float thresh);
+    sod_img sod_canny_edge_image(sod_img im, int reduce_noise);
 """)
 
 # Compute the absolute path to the folder containing sod_c headers and C sources.
@@ -47,7 +49,8 @@ ffibuilder.set_source(
     #include "sod.c"
     ''',
     libraries=[],  # Add any libraries if needed
-    include_dirs=[sod_c_dir]
+    include_dirs=[sod_c_dir],
+    extra_compile_args=[]
 )
 
 if __name__ == "__main__":

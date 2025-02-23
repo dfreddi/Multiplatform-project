@@ -59,10 +59,29 @@ class SodImage:
             return self
         return SodImage(blurred)
 
-    def threshold(self, thresh, inplace=False):
+    def threshold(self, channel, thresh, inplace=False):
+        thresh_img = lib.sod_img_get_layer(self.cimg, channel)
+        thresh_img = lib.sod_threshold_image(thresh_img, thresh)
+        # thresholded = lib.sod_binarize_image(thresholded, 0)
         if inplace:
-            lib.sod_threshold_image(self.cimg, thresh)
+            self.cimg = thresh_img
+            return self
+        return SodImage(thresh_img)
 
+    def canny_edge(self, reduce_noise=1, inplace=False):
+        canny_image = lib.sod_grayscale_image(self.cimg)
+        if canny_image.data == ffi.NULL:
+            raise IOError("Grayscale conversion failed")
+        print("A")
+        canny_image = lib.sod_canny_edge_image(canny_image, reduce_noise)
+        print("B")
+        if canny_image.data == ffi.NULL:
+            raise IOError("Canny edge detection failed")
+        if inplace:
+            lib.sod_free_image(self.cimg)
+            self.cimg = canny_image
+            return self
+        return SodImage(canny_image)
 
     def rgb_to_hsv(self, inplace=False):
         if inplace:
@@ -85,11 +104,12 @@ class SodImage:
         A ratio of 1.0 will keep the image unchanged, while a ratio of 0.0 will
         convert the image to grayscale.
         """
-        assert ratio >= 0.0 and ratio <= 1.0
+        assert 0.0 <= ratio <= 1.0
         desaturated = self.copy()
         desaturated.rgb_to_hsv(inplace=True)
         for x, y in product(range(self.cimg.w), range(self.cimg.h)):
-            lib.sod_img_set_pixel(desaturated.cimg, x, y, 1, ratio * lib.sod_img_get_pixel(desaturated.cimg, x, y, 1))
+            orig = lib.sod_img_get_pixel(desaturated.cimg, x, y, 1)
+            lib.sod_img_set_pixel(desaturated.cimg, x, y, 1, ratio * orig)
         desaturated.hsv_to_rgb(inplace=True)
         if inplace:
             self.cimg = desaturated.cimg
@@ -104,6 +124,8 @@ class SodImage:
         total = self.cimg.h * self.cimg.w * self.cimg.c
         buf = ffi.buffer(self.cimg.data, total * ffi.sizeof("float"))
         arr = np.frombuffer(buf, dtype=np.float32)
+        # Ensure the array is writable.
+        arr.flags.writeable = True
         return arr.reshape((self.cimg.h, self.cimg.w, self.cimg.c))
 
     def __getitem__(self, key):

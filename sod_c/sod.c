@@ -10580,7 +10580,6 @@ if the rounded edge direction angle is 90 degrees, checks the east and west dire
 if the rounded edge direction angle is 135 degrees, checks the northeast and southwest directions
 */
 static void canny_non_max_suppression(sod_img * img, int *g, int *dir) {
-
 	int w, h, x, y, max_x, max_y;
 	w = img->w;
 	h = img->h;
@@ -10590,7 +10589,8 @@ static void canny_non_max_suppression(sod_img * img, int *g, int *dir) {
 		for (x = 0; x < max_x; x++) {
 			switch (dir[x + y]) {
 			case 0:
-				if (g[x + y] > g[x + y - w] && g[x + y] > g[x + y + w]) {
+				int idx_up = (x + y - w) >= 0 ? (x + y - w) : 0;
+				if (g[x + y] > g[idx_up] && g[x + y] > g[x + y + w]) {
 					if (g[x + y] > 255) {
 						img->data[x + y] = 255.;
 					}
