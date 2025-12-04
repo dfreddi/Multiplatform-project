@@ -3,7 +3,7 @@ from sodpy.sod import SodImage
 
 # Test the gaussian blur function on a test image loaded from file.
 i = SodImage.load("./images/test.png", channels=3)
-j = i.gaussian_blur(5, 1.9)
+j = i.gaussian_blur(7, 3.5)
 j.save_png("./images/test_gaussian.png")
 del j
 
@@ -13,7 +13,7 @@ k.save_png("./images/test_constant.png")
 del k
 
 # Test slicing
-l = i[100:200, 100:200]
+l = i[600:1000, 300:700]
 l.save_png("./images/test_slice.png")
 del l
 
