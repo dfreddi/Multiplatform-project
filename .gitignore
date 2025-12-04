@@ -1,5 +1,5 @@
 penv
 *.png
-!images/test.png
+!images/*.png
 sodcffi.*
 __pycache__
