@@ -72,9 +72,7 @@ class SodImage:
         canny_image = lib.sod_grayscale_image(self.cimg)
         if canny_image.data == ffi.NULL:
             raise IOError("Grayscale conversion failed")
-        print("A")
         canny_image = lib.sod_canny_edge_image(canny_image, reduce_noise)
-        print("B")
         if canny_image.data == ffi.NULL:
             raise IOError("Canny edge detection failed")
         if inplace:
